@@ -1,11 +1,19 @@
 package autoride.me.websocket_01;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -28,31 +36,38 @@ public class SocketActivity extends AppCompatActivity {
         }
     }
 
+    private TextView textMessageTyping;
+    private EditText mInputMessageView, editName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_socket);
         mSocket.on("mobile", onNewMessage);
         mSocket.connect();
+        mInputMessageView = (EditText) findViewById(R.id.mInputMessageView);
+
     }
 
-    private EditText mInputMessageView, eidtName;
+
+
 
     public void sendText(View view) {
+
         mInputMessageView = (EditText) findViewById(R.id.mInputMessageView);
-        eidtName = (EditText) findViewById(R.id.eidtName);
+        editName = (EditText) findViewById(R.id.editName);
         String message = mInputMessageView.getText().toString().trim();
-        String handle = eidtName.getText().toString().trim();
+        String handle = editName.getText().toString().trim();
+
         if (TextUtils.isEmpty(message) & TextUtils.isEmpty(handle)) {
             return;
         }
         ChatMan chatMan = new ChatMan(handle, message);
         Gson gson = new Gson();
         String json = gson.toJson(chatMan);
-
         mInputMessageView.setText("");
-        eidtName.setText("");
         mSocket.emit("mobile", json);
+
     }
 
 
@@ -80,15 +95,20 @@ public class SocketActivity extends AppCompatActivity {
 
                     // add the message to view
                     addMessage(username, message);
+                    playBeep();
+
                 }
             });
         }
     };
 
+
+
     private void addMessage(String username, String message) {
 
         TextView textMessageBody = (TextView) findViewById(R.id.textMessageBody);
-        textMessageBody.setText(username + ":" + "  " + message);
+        String chatText = username + ":" + "  " + message;
+        textMessageBody.setText(chatText);
 
     }
 
@@ -100,4 +120,15 @@ public class SocketActivity extends AppCompatActivity {
         mSocket.off("mobile", onNewMessage);
     }
 
+
+
+    public void playBeep() {
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

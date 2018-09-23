@@ -12,6 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp" />
+    <TextView
+        android:id="@+id/textMessageTyping"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -19,7 +24,7 @@
         android:layout_margin="15dp">
 
         <android.support.design.widget.TextInputEditText
-            android:id="@+id/eidtName"
+            android:id="@+id/editName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="name" />
